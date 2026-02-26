@@ -79,7 +79,7 @@ npm wrangler tail
 │   └── styles.css         # 聊天 UI 样式
 ├── src/ 
 │   ├── index.ts           # 主 Worker 入口点
-│   ├── system-prompt.ts   # 系统提示词
+│   ├── prompt.ts          # 系统提示词
 │   └── types.ts           # TypeScript 类型定义
 ├── test/                  # 测试文件
 ├── wrangler.jsonc         # Cloudflare Worker 配置
@@ -95,7 +95,7 @@ npm wrangler tail
 
 ### 修改系统提示词
 
-可以通过更新 `src/system-prompt.ts` 来更改默认系统提示词，使其符合你的数字分身人格和行为模式。
+可以通过更新 `src/prompt.ts` 来更改默认系统提示词，使其符合你的数字分身人格和行为模式。
 
 ### 样式
 
