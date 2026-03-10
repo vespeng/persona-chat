@@ -9,11 +9,11 @@
 </head>
 
 <body>
-	<header>
+	<div class="welcome-container" id="welcome-container">
 		<h1>Vespeng AI Chat</h1>
-	</header>
+	</div>
 
-	<div class="chat-container">
+	<div class="chat-container" id="chat-container">
 		<div id="chat-messages" class="chat-messages">
 			<div class="message assistant-message">
 				<!-- AI 消息容器 -->
@@ -26,7 +26,7 @@
 		</div>
 	</div>
 
-	<div class="message-input">
+	<div class="message-input" id="message-input">
 		<textarea id="user-input" placeholder="Type your message here..." rows="1" autofocus></textarea>
 		<button id="send-button">Send</button>
 	</div>

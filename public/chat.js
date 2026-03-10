@@ -9,6 +9,8 @@ const chatMessages = document.getElementById("chat-messages");
 const userInput = document.getElementById("user-input");
 const sendButton = document.getElementById("send-button");
 const typingIndicator = document.getElementById("typing-indicator");
+const welcomeContainer = document.getElementById("welcome-container");
+const messageInput = document.getElementById("message-input");
 
 // Chat state
 let chatHistory = [
@@ -19,6 +21,7 @@ let chatHistory = [
 	},
 ];
 let isProcessing = false;
+let chatStarted = false;
 
 // Auto-resize textarea as user types
 userInput.addEventListener("input", function () {
@@ -45,6 +48,15 @@ async function sendMessage() {
 
 	// Don't send empty messages
 	if (message === "" || isProcessing) return;
+
+	// 首次发送消息时，切换到聊天界面
+	if (!chatStarted) {
+		chatStarted = true;
+		// 直接切换到聊天界面，让CSS过渡效果自然发生
+		document.body.classList.add("chat-started");
+		// 清除初始的欢迎消息
+		chatMessages.innerHTML = "";
+	}
 
 	// Disable input while processing
 	isProcessing = true;
