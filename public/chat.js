@@ -80,9 +80,7 @@ async function sendMessage() {
 		// Create new assistant response element
 		const assistantMessageEl = document.createElement("div");
 		assistantMessageEl.className = "message assistant-message";
-		assistantMessageEl.innerHTML = "<p></p>";
 		chatMessages.appendChild(assistantMessageEl);
-		const assistantTextEl = assistantMessageEl.querySelector("p");
 
 		// Scroll to bottom
 		chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -112,8 +110,8 @@ async function sendMessage() {
 		let responseText = "";
 		let buffer = "";
 		const flushAssistantText = () => {
-			// 使用 Marked.js 渲染 Markdown 内容
-			assistantTextEl.innerHTML = marked.parse(responseText);
+			// 使用 Marked.js 渲染 Markdown 内容，移除末尾空白
+			assistantMessageEl.innerHTML = marked.parse(responseText).trimEnd();
 			chatMessages.scrollTop = chatMessages.scrollHeight;
 		};
 
@@ -215,7 +213,7 @@ function addMessageToChat(role, content) {
 	const messageEl = document.createElement("div");
 	messageEl.className = `message ${role}-message`;
 	// 使用 Marked.js 渲染 Markdown 内容
-	messageEl.innerHTML = `<p>${marked.parse(content)}</p>`;
+	messageEl.innerHTML = marked.parse(content).trimEnd();
 	chatMessages.appendChild(messageEl);
 
 	// Scroll to bottom
