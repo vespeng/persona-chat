@@ -1,11 +1,11 @@
-# LLM Twin Chat
+# Twin Chat
 
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange?logo=cloudflare)](https://workers.cloudflare.com/)
 [![Workers AI](https://img.shields.io/badge/Workers-AI-blue)](https://developers.cloudflare.com/workers-ai/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-由 Cloudflare Workers AI 的 `llm-chat-app-template` 模板深度定制，将通用聊天模板转化为**个人数字分身**，全栈运行在全球边缘节点。
+基于 Cloudflare Workers AI 的 `llm-chat-app-template` 模板深度定制，将通用聊天模板转化为**个人数字分身**，全栈运行在全球边缘节点。
 
 ## 特性
 
@@ -42,8 +42,8 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/vespeng/llm-twin-chat.git
-cd llm-twin-chat
+git clone https://github.com/vespeng/twin-chat.git
+cd twin-chat
 
 # 安装依赖
 pnpm install
@@ -79,7 +79,7 @@ pnpm wrangler tail
 ## 项目结构
 
 ```
-llm-twin-chat/
+twin-chat/
 ├── public/                  # 静态资源
 │   ├── index.html           # 聊天 UI 入口
 │   ├── chat.js              # 前端交互逻辑

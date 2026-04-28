@@ -1,5 +1,5 @@
 {
-	"name": "llm-twin-chat",
+	"name": "twin-chat",
 	"description": "A simple chat application powered by Cloudflare Workers AI",
 	"cloudflare": {
 		"label": "LLM Chat App",
