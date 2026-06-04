@@ -5,7 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-基于 Cloudflare Workers AI 的 `llm-chat-app-template` 模板深度定制，将通用聊天模板转化个性化 Prompt 角色聊天应用，全栈运行在全球边缘节点。
+基于 Cloudflare Workers AI 的 `llm-chat-app-template` 模板深度定制，将通用聊天模板转化为个性化的 Prompt 角色聊天应用，全栈运行在全球边缘节点。
 
 ## 特性
 
@@ -86,7 +86,7 @@ persona-chat/
 │   └── styles.css           # UI 样式 (含主题变量)
 ├── src/
 │   ├── index.ts             # Worker 入口 & API 路由
-│   ├── prompt.ts            # 系统提示词 (数字分身人格)
+│   ├── prompt.ts            # 系统提示词 (角色人格)
 │   └── types.ts             # TypeScript 类型定义
 ├── test/                    # 测试文件
 ├── wrangler.jsonc           # Cloudflare Workers 配置
@@ -135,13 +135,13 @@ const MODEL_ID = "@cf/meta/llama-3.1-8b-instruct-fp8";
 
 可用模型列表: [Workers AI Models](https://developers.cloudflare.com/workers-ai/models/)
 
-### 自定义数字分身人格
+### 自定义提示词
 
-编辑 `src/prompt.ts` 文件，修改系统提示词来定义你的 AI 数字分身：
+编辑 `src/prompt.ts` 文件，修改系统提示词来定义你的角色人格：
 
 ```typescript
 export default `
-你是 [你的名字] 的 AI 数字分身...
+你是 [你的名字] ...
 `;
 ```
 

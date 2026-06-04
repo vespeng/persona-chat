@@ -4,12 +4,27 @@
  * Handles the chat UI interactions and communication with the backend API.
  */
 
+// Welcome messages list - randomly pick one on load
+const welcomeMessages = [
+	"👋 Hi！有什么想聊的吗？",
+	"😊 嘿！今天想聊点什么呢？",
+	"✨ 你好！有什么需要我帮忙的？",
+	"🌟 嗨！来聊聊天～",
+	"💬 你好！随便聊聊～",
+	"🌞 哈喽！今天心情怎么样？"
+];
+const randomWelcome = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+
 // DOM elements
 const chatMessages = document.getElementById("chat-messages");
 const userInput = document.getElementById("user-input");
 const sendButton = document.getElementById("send-button");
 const welcomeContainer = document.getElementById("welcome-container");
 const messageInput = document.getElementById("message-input");
+
+// Set random welcome message
+const welcomeTitle = welcomeContainer.querySelector("h1");
+if (welcomeTitle) welcomeTitle.textContent = randomWelcome;
 
 // Chat state
 let chatHistory = [
@@ -28,9 +43,9 @@ userInput.addEventListener("input", function () {
 	this.style.height = this.scrollHeight + "px";
 });
 
-// Send message on Enter (without Shift)
+// Send message on Enter (without Shift), but not during IME composition
 userInput.addEventListener("keydown", function (e) {
-	if (e.key === "Enter" && !e.shiftKey) {
+	if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
 		e.preventDefault();
 		sendMessage();
 	}
