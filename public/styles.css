@@ -29,7 +29,6 @@
 
 	/* 阴影 */
 	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
-	--shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08), 0 4px 8px rgba(0, 0, 0, 0.06);
 }
 
 /* 暗色主题 */
@@ -56,7 +55,6 @@
 	--color-scrollbar-hover: rgba(255, 255, 255, 0.3);
 
 	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.15);
-	--shadow-md: 0 2px 4px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 * {
@@ -161,7 +159,6 @@ body:not(.chat-started) .welcome-container {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	transition: opacity 0.3s ease-out, transform 0.3s ease-out;
 }
 
 body:not(.chat-started) .message-input {
@@ -170,7 +167,6 @@ body:not(.chat-started) .message-input {
 	left: calc(0.75rem + 20px);
 	right: calc(0.75rem + 20px);
 	transform: translateY(80%);
-	transition: all 0.4s ease-out;
 }
 
 .welcome-container {
@@ -271,7 +267,6 @@ body.chat-started .message-input {
 .chat-container {
 	display: none;
 	flex-direction: column;
-	min-height: 400px;
 }
 
 .chat-messages {
@@ -308,12 +303,6 @@ body.chat-started .message-input {
 	animation: messageSlideIn 0.3s ease-out forwards;
 	transform-origin: center bottom;
 	box-shadow: var(--shadow-sm);
-	transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.message:hover {
-	transform: translateY(-2px);
-	box-shadow: var(--shadow-md);
 }
 
 .message p {
@@ -330,7 +319,6 @@ body.chat-started .message-input {
 	align-self: flex-end;
 	margin-left: auto;
 	max-width: 85%;
-	min-width: fit-content;
 	width: fit-content;
 	border-bottom-right-radius: 4px;
 }
@@ -341,24 +329,9 @@ body.chat-started .message-input {
 	-webkit-backdrop-filter: blur(12px);
 	align-self: flex-start;
 	max-width: 85%;
-	min-width: fit-content;
 	width: fit-content;
 	border-bottom-left-radius: 4px;
 	border: 1px solid var(--color-assistant-border);
-}
-
-/* 针对不同长度的文本调整消息气泡宽度 */
-.user-message:has(p:empty) {
-	min-width: 60px;
-}
-
-.user-message:has(p:not(:empty)):not(:has(p br)) {
-	max-width: max(60px, min(85%, fit-content));
-}
-
-.user-message:has(p br) {
-	max-width: 85%;
-	width: 85%;
 }
 
 .message-input {
@@ -390,10 +363,6 @@ body.chat-started .message-input {
 	background: transparent;
 	padding: 0;
 	color: var(--color-text);
-}
-
-#user-input:focus {
-	border-color: transparent;
 }
 
 #send-button {

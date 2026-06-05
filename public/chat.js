@@ -65,20 +65,13 @@ const chatMessages = document.getElementById("chat-messages");
 const userInput = document.getElementById("user-input");
 const sendButton = document.getElementById("send-button");
 const welcomeContainer = document.getElementById("welcome-container");
-const messageInput = document.getElementById("message-input");
 
 // Set random welcome message
 const welcomeTitle = welcomeContainer.querySelector("h1");
 if (welcomeTitle) welcomeTitle.textContent = randomWelcome;
 
 // Chat state
-let chatHistory = [
-	{
-		role: "assistant",
-		content:
-			"Hello! I'm an LLM chat app powered by Cloudflare Workers AI. How can I help you today?",
-	},
-];
+let chatHistory = [];
 let isProcessing = false;
 let chatStarted = false;
 

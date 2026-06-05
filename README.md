@@ -5,7 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-基于 Cloudflare Workers AI 的 `llm-chat-app-template` 模板深度定制，将通用聊天模板转化为个性化的 Prompt 角色聊天应用，全栈运行在全球边缘节点。
+基于 Cloudflare Workers AI 的 `llm-chat-app-template` 模板深度定制，将通用聊天转化为个性化的 Prompt 角色聊天应用，全栈运行在全球边缘节点。
 
 ## 特性
 
