@@ -4,13 +4,58 @@
  * Handles the chat UI interactions and communication with the backend API.
  */
 
+// ===================== Theme Toggle =====================
+// Initial theme is already set by inline script in <head> before CSS loads.
+// Here we only register the system preference listener.
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+	const newTheme = e.matches ? "dark" : "light";
+	document.documentElement.setAttribute("data-theme", newTheme);
+	localStorage.setItem("theme", newTheme);
+});
+
+document.getElementById("theme-toggle").addEventListener("click", function () {
+	const html = document.documentElement;
+	const isDark = html.getAttribute("data-theme") === "dark";
+	const newTheme = isDark ? "light" : "dark";
+	const overlay = document.getElementById("theme-overlay");
+
+	// Apply the new theme immediately so content updates underneath
+	html.setAttribute("data-theme", newTheme);
+	localStorage.setItem("theme", newTheme);
+
+	// Set overlay to OLD theme bg color, so it masks the new theme initially
+	overlay.style.backgroundColor = isDark ? "#1a1b1e" : "#ffffff";
+	overlay.style.clipPath = "circle(150% at 100% 100%)";
+	overlay.style.display = "block";
+
+	// Animate the overlay shrinking from full to zero, revealing the new theme
+	// Circle center at bottom-right so new theme is revealed from top-left to bottom-right
+	const animation = overlay.animate(
+		[
+			{ clipPath: "circle(150% at 100% 100%)" },
+			{ clipPath: "circle(0% at 100% 100%)" },
+		],
+		{
+			duration: 800,
+			easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+		}
+	);
+
+	animation.onfinish = () => {
+		overlay.style.display = "none";
+		overlay.style.clipPath = "";
+	};
+});
+
+// ===================== Chat App =====================
+
 // Welcome messages list - randomly pick one on load
 const welcomeMessages = [
 	"👋 Hi！有什么想聊的吗？",
 	"😊 嘿！今天想聊点什么呢？",
 	"✨ 你好！有什么需要我帮忙的？",
 	"🌟 嗨！来聊聊天～",
-	"💬 你好！随便聊聊～",
+	"💬 你好！随便聊聊？",
 	"🌞 哈喽！今天心情怎么样？"
 ];
 const randomWelcome = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];

@@ -32,6 +32,33 @@
 	--shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08), 0 4px 8px rgba(0, 0, 0, 0.06);
 }
 
+/* 暗色主题 */
+[data-theme="dark"] {
+	--color-primary: #4dabf7;
+	--color-primary-hover: #339af0;
+
+	--color-text: #c1c2c5;
+	--color-text-secondary: #909296;
+
+	--color-bg: #1a1b1e;
+	--color-bg-secondary: #25262b;
+	--color-bg-tertiary: #2c2e33;
+
+	--color-user-msg-start: #1864ab;
+	--color-user-msg-end: #1a3a5c;
+
+	--color-assistant-bg: rgba(37, 38, 43, 0.8);
+	--color-assistant-border: rgba(55, 58, 65, 0.5);
+
+	--color-border: #373a40;
+
+	--color-scrollbar: rgba(255, 255, 255, 0.15);
+	--color-scrollbar-hover: rgba(255, 255, 255, 0.3);
+
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.15);
+	--shadow-md: 0 2px 4px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
 * {
 	box-sizing: border-box;
 	margin: 0;
@@ -54,6 +81,69 @@ body {
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
+}
+
+/* 主题切换按钮 */
+#theme-toggle {
+	position: fixed;
+	top: 1rem;
+	right: 1rem;
+	z-index: 1000;
+	width: 40px;
+	height: 40px;
+	border: none;
+	border-radius: 50%;
+	background: var(--color-bg-secondary);
+	color: var(--color-text);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: var(--shadow-sm);
+	transition: background-color 0.3s, color 0.3s, transform 0.2s;
+}
+
+#theme-toggle:hover {
+	transform: scale(1.1);
+	background: var(--color-bg-tertiary);
+}
+
+#theme-toggle .icon-moon,
+#theme-toggle .icon-sun {
+	position: absolute;
+	transition: opacity 0.3s, transform 0.3s;
+}
+
+#theme-toggle .icon-sun {
+	opacity: 0;
+	transform: rotate(-90deg) scale(0);
+}
+
+#theme-toggle .icon-moon {
+	opacity: 1;
+	transform: rotate(0deg) scale(1);
+}
+
+[data-theme="dark"] #theme-toggle .icon-sun {
+	opacity: 1;
+	transform: rotate(0deg) scale(1);
+}
+
+[data-theme="dark"] #theme-toggle .icon-moon {
+	opacity: 0;
+	transform: rotate(90deg) scale(0);
+}
+
+/* 主题过渡遮罩层 */
+.theme-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	z-index: 999;
+	pointer-events: none;
+	display: none;
 }
 
 /* 初始状态：欢迎界面 */
@@ -299,6 +389,7 @@ body.chat-started .message-input {
 	overflow-y: hidden;
 	background: transparent;
 	padding: 0;
+	color: var(--color-text);
 }
 
 #user-input:focus {
