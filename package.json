@@ -1,5 +1,5 @@
 {
-	"name": "twin-chat",
+	"name": "persona-chat",
 	"description": "A simple chat application powered by Cloudflare Workers AI",
 	"cloudflare": {
 		"label": "LLM Chat App",
@@ -21,7 +21,7 @@
 		"@cloudflare/workers-types": "^4.20250425.0",
 		"@types/node": "24.10.1",
 		"typescript": "5.9.3",
-		"vitest": "3.2.4",
+		"vitest": "4.1.0",
 		"wrangler": "^4.58.0"
 	},
 	"private": true,

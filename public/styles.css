@@ -29,7 +29,32 @@
 
 	/* 阴影 */
 	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
-	--shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08), 0 4px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* 暗色主题 */
+[data-theme="dark"] {
+	--color-primary: #4dabf7;
+	--color-primary-hover: #339af0;
+
+	--color-text: #c1c2c5;
+	--color-text-secondary: #909296;
+
+	--color-bg: #1a1b1e;
+	--color-bg-secondary: #25262b;
+	--color-bg-tertiary: #2c2e33;
+
+	--color-user-msg-start: #1864ab;
+	--color-user-msg-end: #1a3a5c;
+
+	--color-assistant-bg: rgba(37, 38, 43, 0.8);
+	--color-assistant-border: rgba(55, 58, 65, 0.5);
+
+	--color-border: #373a40;
+
+	--color-scrollbar: rgba(255, 255, 255, 0.15);
+	--color-scrollbar-hover: rgba(255, 255, 255, 0.3);
+
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 * {
@@ -40,8 +65,9 @@
 
 body {
 	font-family:
-		-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
-		Cantarell, sans-serif;
+		-apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+		"Microsoft YaHei", "Noto Sans SC", "Segoe UI", Roboto, Oxygen,
+		Ubuntu, Cantarell, sans-serif;
 	line-height: 1.6;
 	color: var(--color-text);
 	max-width: 850px;
@@ -53,6 +79,69 @@ body {
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
+}
+
+/* 主题切换按钮 */
+#theme-toggle {
+	position: fixed;
+	top: 1rem;
+	right: 1rem;
+	z-index: 1000;
+	width: 40px;
+	height: 40px;
+	border: none;
+	border-radius: 50%;
+	background: var(--color-bg-secondary);
+	color: var(--color-text);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: var(--shadow-sm);
+	transition: background-color 0.3s, color 0.3s, transform 0.2s;
+}
+
+#theme-toggle:hover {
+	transform: scale(1.1);
+	background: var(--color-bg-tertiary);
+}
+
+#theme-toggle .icon-moon,
+#theme-toggle .icon-sun {
+	position: absolute;
+	transition: opacity 0.3s, transform 0.3s;
+}
+
+#theme-toggle .icon-sun {
+	opacity: 0;
+	transform: rotate(-90deg) scale(0);
+}
+
+#theme-toggle .icon-moon {
+	opacity: 1;
+	transform: rotate(0deg) scale(1);
+}
+
+[data-theme="dark"] #theme-toggle .icon-sun {
+	opacity: 1;
+	transform: rotate(0deg) scale(1);
+}
+
+[data-theme="dark"] #theme-toggle .icon-moon {
+	opacity: 0;
+	transform: rotate(90deg) scale(0);
+}
+
+/* 主题过渡遮罩层 */
+.theme-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	z-index: 999;
+	pointer-events: none;
+	display: none;
 }
 
 /* 初始状态：欢迎界面 */
@@ -70,16 +159,14 @@ body:not(.chat-started) .welcome-container {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	transition: opacity 0.3s ease-out, transform 0.3s ease-out;
 }
 
 body:not(.chat-started) .message-input {
 	position: absolute;
 	bottom: 50%;
-	left: 0.75rem;
-	right: 0.75rem;
+	left: calc(0.75rem + 20px);
+	right: calc(0.75rem + 20px);
 	transform: translateY(80%);
-	transition: all 0.4s ease-out;
 }
 
 .welcome-container {
@@ -97,6 +184,7 @@ body:not(.chat-started) .message-input {
 
 .welcome-container h1 {
 	font-size: 1.65rem;
+	font-weight: 400;
 	color: var(--color-primary);
 	margin-bottom: 0;
 	position: absolute;
@@ -131,11 +219,9 @@ body.chat-started .chat-container {
 
 body.chat-started .message-input {
 	position: absolute;
-	bottom: 0;
-	left: 0.75rem;
-	right: 0.75rem;
-	padding: 0.8rem;
-	padding-bottom: 2.4rem;
+	bottom: 1.2rem;
+	left: calc(0.75rem + 20px);
+	right: calc(0.75rem + 20px);
 	animation: inputSlideToBottom 0.5s ease-out forwards;
 }
 
@@ -147,7 +233,7 @@ body.chat-started .message-input {
 	}
 
 	to {
-		bottom: 0;
+		bottom: 1.2rem;
 		transform: translateY(0);
 		opacity: 1;
 	}
@@ -181,7 +267,6 @@ body.chat-started .message-input {
 .chat-container {
 	display: none;
 	flex-direction: column;
-	min-height: 400px;
 }
 
 .chat-messages {
@@ -218,12 +303,6 @@ body.chat-started .message-input {
 	animation: messageSlideIn 0.3s ease-out forwards;
 	transform-origin: center bottom;
 	box-shadow: var(--shadow-sm);
-	transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.message:hover {
-	transform: translateY(-2px);
-	box-shadow: var(--shadow-md);
 }
 
 .message p {
@@ -240,7 +319,6 @@ body.chat-started .message-input {
 	align-self: flex-end;
 	margin-left: auto;
 	max-width: 85%;
-	min-width: fit-content;
 	width: fit-content;
 	border-bottom-right-radius: 4px;
 }
@@ -251,69 +329,61 @@ body.chat-started .message-input {
 	-webkit-backdrop-filter: blur(12px);
 	align-self: flex-start;
 	max-width: 85%;
-	min-width: fit-content;
 	width: fit-content;
 	border-bottom-left-radius: 4px;
 	border: 1px solid var(--color-assistant-border);
 }
 
-/* 针对不同长度的文本调整消息气泡宽度 */
-.user-message:has(p:empty) {
-	min-width: 60px;
-}
-
-.user-message:has(p:not(:empty)):not(:has(p br)) {
-	max-width: max(60px, min(85%, fit-content));
-}
-
-.user-message:has(p br) {
-	max-width: 85%;
-	width: 85%;
-}
-
 .message-input {
 	display: flex;
+	align-items: flex-end;
 	background-color: var(--color-bg);
+	border: 2px solid var(--color-border);
+	border-radius: 9999px;
 	flex-shrink: 0;
+	padding: 0.35rem 0.5rem 0.35rem 1rem;
+	transition: border-color 0.2s;
+}
+
+.message-input:focus-within {
+	border-color: var(--color-primary);
 }
 
 #user-input {
 	flex: 1;
-	padding: 0.5rem 1rem;
-	border: 2px solid var(--color-border);
-	border-radius: 22px;
+	border: none;
 	font-family: inherit;
 	font-size: 0.95rem;
 	line-height: 1.4;
-	min-height: 44px;
+	min-height: 28px;
+	max-height: 200px;
 	outline: none;
 	resize: none;
 	overflow-y: hidden;
-	display: flex;
-	align-items: center;
-}
-
-#user-input:focus {
-	border-color: var(--color-primary);
+	background: transparent;
+	padding: 0;
+	color: var(--color-text);
 }
 
 #send-button {
-	margin-left: 0.5rem;
-	padding: 0.35rem 1.2rem;
+	flex-shrink: 0;
+	width: 36px;
+	height: 36px;
+	padding: 0;
 	background-color: var(--color-primary);
 	color: var(--color-bg);
 	border: none;
-	border-radius: 22px;
+	border-radius: 50%;
 	cursor: pointer;
 	transition: all 0.3s;
-	font-weight: 500;
-	font-size: 0.95rem;
-	height: 44px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 #send-button:hover:not(:disabled) {
 	background-color: var(--color-primary-hover);
-	transform: translateY(-1px);
+	transform: scale(1.05);
 }
 
 #send-button:disabled {
