@@ -132,14 +132,14 @@ body {
 	transform: rotate(90deg) scale(0);
 }
 
-/* 主题过渡遮罩层 */
+/* 主题过渡遮罩层 - 放在内容背后，仅用于背景色过渡动画 */
 .theme-overlay {
 	position: fixed;
 	top: 0;
 	left: 0;
 	width: 100vw;
 	height: 100vh;
-	z-index: 999;
+	z-index: -1;
 	pointer-events: none;
 	display: none;
 }
@@ -343,6 +343,14 @@ body.chat-started .message-input {
 	flex-shrink: 0;
 	padding: 0.35rem 0.5rem 0.35rem 1rem;
 	transition: border-color 0.2s;
+}
+
+/* 主题过渡期间，输入框与气泡颜色同步过渡 */
+body.theme-transitioning .message-input,
+body.theme-transitioning .message,
+body.theme-transitioning .message p,
+body.theme-transitioning .assistant-message {
+	transition: background-color 800ms cubic-bezier(0.4, 0, 0.2, 1), border-color 800ms cubic-bezier(0.4, 0, 0.2, 1), color 800ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 800ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .message-input:focus-within {

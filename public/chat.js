@@ -19,21 +19,33 @@ document.getElementById("theme-toggle").addEventListener("click", function () {
 	const newTheme = isDark ? "light" : "dark";
 	const overlay = document.getElementById("theme-overlay");
 
-	// Apply the new theme immediately so content updates underneath
+	// Add transitioning class so input box transitions colors in sync
+	document.body.classList.add("theme-transitioning");
+
+	// Apply the new theme immediately so content colors update
 	html.setAttribute("data-theme", newTheme);
 	localStorage.setItem("theme", newTheme);
 
-	// Set overlay to OLD theme bg color, so it masks the new theme initially
+	// Set html background to NEW theme color (revealed as overlay shrinks)
+	html.style.backgroundColor = isDark ? "#ffffff" : "#1a1b1e";
+	// Make body background transparent so overlay (behind content) is visible
+	document.body.style.backgroundColor = "transparent";
+
+	// Set overlay to OLD theme bg color (covers old background initially)
 	overlay.style.backgroundColor = isDark ? "#1a1b1e" : "#ffffff";
-	overlay.style.clipPath = "circle(150% at 100% 100%)";
+
+	// Light → Dark: circle center at bottom-right (100% 100%), new theme reveals from top-left to bottom-right
+	// Dark → Light: circle center at top-left (0% 0%), new theme reveals from bottom-right to top-left
+	const circleCenter = isDark ? "0% 0%" : "100% 100%";
+
+	overlay.style.clipPath = `circle(150% at ${circleCenter})`;
 	overlay.style.display = "block";
 
-	// Animate the overlay shrinking from full to zero, revealing the new theme
-	// Circle center at bottom-right so new theme is revealed from top-left to bottom-right
+	// Animate the overlay shrinking from full to zero, revealing the new theme background
 	const animation = overlay.animate(
 		[
-			{ clipPath: "circle(150% at 100% 100%)" },
-			{ clipPath: "circle(0% at 100% 100%)" },
+			{ clipPath: `circle(150% at ${circleCenter})` },
+			{ clipPath: `circle(0% at ${circleCenter})` },
 		],
 		{
 			duration: 800,
@@ -44,6 +56,12 @@ document.getElementById("theme-toggle").addEventListener("click", function () {
 	animation.onfinish = () => {
 		overlay.style.display = "none";
 		overlay.style.clipPath = "";
+		// Restore body background from CSS variable
+		document.body.style.backgroundColor = "";
+		// Remove html inline background (CSS variable takes over)
+		html.style.backgroundColor = "";
+		// Remove transitioning class (restore fast border-color transition for focus)
+		document.body.classList.remove("theme-transitioning");
 	};
 });
 
