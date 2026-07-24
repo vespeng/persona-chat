@@ -13,7 +13,8 @@ import SYSTEM_PROMPT from "./prompt";
 
 // Model ID for Workers AI model
 // https://developers.cloudflare.com/workers-ai/models/
-const MODEL_ID = "@cf/meta/llama-3.1-8b-instruct-fp8";
+const MODEL_ID = "@cf/qwen/qwen2.5-coder-32b-instruct";
+
 
 export default {
 	/**

@@ -70,8 +70,7 @@ document.getElementById("theme-toggle").addEventListener("click", function () {
 // Welcome messages list - randomly pick one on load
 const welcomeMessages = [
 	"👋 Hi！有什么想聊的吗？",
-	"😊 嘿！今天想聊点什么呢？",
-	"✨ 你好！有什么需要我帮忙的？",
+	"😊 嘿！想聊点什么呢？",
 	"🌟 嗨！来聊聊天～",
 	"💬 你好！随便聊聊？",
 	"🌞 哈喽！今天心情怎么样？"
@@ -93,10 +92,66 @@ let chatHistory = [];
 let isProcessing = false;
 let chatStarted = false;
 
+// 流式滚动节流：避免每个 SSE chunk 都触发一次 scrollTo，导致动画互相打断和卡顿
+let scrollScheduled = false;
+const SCROLL_FRAME_MS = 60; // ~16fps 足够平滑，同时大幅减少 reflow
+let lastScrollTs = 0;
+
+/**
+ * 平滑滚动到聊天容器底部（节流版）
+ * - 用 requestAnimationFrame 合并同一帧内的多次调用
+ * - 限制触发频率，避免流式渲染时频繁打断滚动动画
+ */
+function scheduleScrollToBottom() {
+	if (scrollScheduled) return;
+	scrollScheduled = true;
+
+	const now = performance.now();
+	const elapsed = now - lastScrollTs;
+	const delay = elapsed >= SCROLL_FRAME_MS ? 0 : SCROLL_FRAME_MS - elapsed;
+
+	setTimeout(() => {
+		scrollScheduled = false;
+		lastScrollTs = performance.now();
+		requestAnimationFrame(() => {
+			if (!chatMessages) return;
+			// 标记滚动中，让滚动条样式保持可见
+			chatMessages.classList.add("is-scrolling");
+			chatMessages.scrollTo({
+				top: chatMessages.scrollHeight,
+				behavior: "smooth",
+			});
+		});
+	}, delay);
+}
+
+// 滚动结束后移除 is-scrolling 标记
+let scrollEndTimer = null;
+chatMessages?.addEventListener("scroll", () => {
+	if (scrollEndTimer) clearTimeout(scrollEndTimer);
+	scrollEndTimer = setTimeout(() => {
+		chatMessages?.classList.remove("is-scrolling");
+	}, 400);
+});
+
 // Auto-resize textarea as user types
 userInput.addEventListener("input", function () {
 	this.style.height = "auto";
 	this.style.height = this.scrollHeight + "px";
+});
+
+// 移动端唤起输入法时，确保最新消息可见（兜底：部分浏览器不自动滚动）
+userInput.addEventListener("focus", () => {
+	if (!chatStarted) return;
+	// 等待键盘弹出导致的 layout 变化稳定后再滚动
+	setTimeout(() => {
+		requestAnimationFrame(() => {
+			chatMessages.scrollTo({
+				top: chatMessages.scrollHeight,
+				behavior: "smooth",
+			});
+		});
+	}, 300);
 });
 
 // Send message on Enter (without Shift), but not during IME composition
@@ -154,7 +209,7 @@ async function sendMessage() {
 		chatMessages.appendChild(assistantMessageEl);
 
 		// Scroll to bottom
-		chatMessages.scrollTop = chatMessages.scrollHeight;
+		scheduleScrollToBottom();
 
 		// Send request to API
 		const response = await fetch("/api/chat", {
@@ -183,7 +238,7 @@ async function sendMessage() {
 		const flushAssistantText = () => {
 			// 使用 Marked.js 渲染 Markdown 内容，移除末尾空白
 			assistantMessageEl.innerHTML = marked.parse(responseText).trimEnd();
-			chatMessages.scrollTop = chatMessages.scrollHeight;
+			scheduleScrollToBottom();
 		};
 
 		let sawDone = false;
@@ -289,7 +344,7 @@ function addMessageToChat(role, content) {
 	chatMessages.appendChild(messageEl);
 
 	// Scroll to bottom
-	chatMessages.scrollTop = chatMessages.scrollHeight;
+	scheduleScrollToBottom();
 }
 
 function consumeSseEvents(buffer) {

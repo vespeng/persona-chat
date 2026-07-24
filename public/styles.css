@@ -75,6 +75,7 @@ body {
 	padding: 0 0.75rem;
 	background: var(--color-bg);
 	height: 100vh;
+	height: 100dvh;
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -104,6 +105,13 @@ body {
 #theme-toggle:hover {
 	transform: scale(1.1);
 	background: var(--color-bg-tertiary);
+}
+
+/* 移动端隐藏主题切换按钮，仅跟随系统主题 */
+@media (max-width: 768px) {
+	#theme-toggle {
+		display: none;
+	}
 }
 
 #theme-toggle .icon-moon,
@@ -213,27 +221,26 @@ body.chat-started .chat-container {
 	flex: 1;
 	min-height: 0;
 	margin-top: 0.8rem;
-	padding-bottom: 100px; /* 为底部绝对定位的输入框留出空间 */
 	animation: smoothSlideUp 0.4s ease-out;
 }
 
 body.chat-started .message-input {
-	position: absolute;
-	bottom: 1.2rem;
-	left: calc(0.75rem + 20px);
-	right: calc(0.75rem + 20px);
+	position: relative;
+	flex-shrink: 0;
+	left: auto;
+	right: auto;
+	bottom: auto;
+	margin: 0 20px 1.2rem;
 	animation: inputSlideToBottom 0.5s ease-out forwards;
 }
 
 @keyframes inputSlideToBottom {
 	from {
-		bottom: 50%;
-		transform: translateY(80%);
+		transform: translateY(-50vh);
 		opacity: 1;
 	}
 
 	to {
-		bottom: 1.2rem;
 		transform: translateY(0);
 		opacity: 1;
 	}
@@ -273,9 +280,18 @@ body.chat-started .message-input {
 	flex: 1;
 	overflow-y: auto;
 	padding: 1.5rem;
+	/* 平滑滚动 + 滚动条占位稳定，避免出现/消失时内容横向抖动 */
+	scroll-behavior: smooth;
+	scrollbar-gutter: stable both-edges;
+	/* Firefox 滚动条 */
+	scrollbar-width: thin;
+	scrollbar-color: var(--color-scrollbar) transparent;
+	/* 启动滚动时才进行合成层加速，减少卡顿 */
+	will-change: scroll-position;
+	contain: layout style;
 }
 
-/* 自定义滚动条样式 */
+/* 自定义滚动条样式（WebKit） */
 .chat-messages::-webkit-scrollbar {
 	width: 6px;
 }
@@ -285,13 +301,47 @@ body.chat-started .message-input {
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
-	background-color: var(--color-scrollbar);
+	background-color: transparent;
 	border-radius: 3px;
-	transition: background-color 0.2s;
+	transition: background-color 0.25s ease;
 }
 
-.chat-messages::-webkit-scrollbar-thumb:hover {
+/* 仅当容器可滚动 / 悬停 / 滚动中 时才显示滑块，
+   避免短内容时滚动条突然闪现 */
+.chat-messages:hover::-webkit-scrollbar-thumb,
+.chat-messages:focus-within::-webkit-scrollbar-thumb {
+	background-color: var(--color-scrollbar);
+}
+
+.chat-messages:hover::-webkit-scrollbar-thumb:hover,
+.chat-messages:focus-within::-webkit-scrollbar-thumb:hover {
 	background-color: var(--color-scrollbar-hover);
+}
+
+/* 滚动中：保持滑块可见 */
+.chat-messages.is-scrolling::-webkit-scrollbar-thumb {
+	background-color: var(--color-scrollbar);
+}
+
+/* 移动端：隐藏滚动条但保留滚动功能 */
+@media (max-width: 768px) {
+	.chat-messages {
+		/* WebKit: 宽度为 0 即隐藏滑块 */
+		scrollbar-width: none; /* Firefox */
+		/* 移除占位 gutter，避免额外留白 */
+		scrollbar-gutter: auto;
+	}
+
+	.chat-messages::-webkit-scrollbar {
+		width: 0;
+		height: 0;
+		display: none;
+	}
+
+	/* 移动端不需要 is-scrolling 显色 */
+	.chat-messages.is-scrolling::-webkit-scrollbar-thumb {
+		background-color: transparent;
+	}
 }
 
 .message {
