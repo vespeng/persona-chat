@@ -11,9 +11,9 @@
 import { Env, ChatMessage } from "./types";
 import SYSTEM_PROMPT from "./prompt";
 
-// Model ID for Workers AI model
-// https://developers.cloudflare.com/workers-ai/models/
-const MODEL_ID = "@cf/qwen/qwen2.5-coder-32b-instruct";
+// Default values, overridable via environment variables (see wrangler.jsonc "vars")
+const DEFAULT_MODEL_ID = "@cf/meta/llama-3.1-8b-instruct-fp8";
+const DEFAULT_APP_TITLE = "AI Chat";
 
 
 export default {
@@ -27,8 +27,13 @@ export default {
 	): Promise<Response> {
 		const url = new URL(request.url);
 
-		// Handle static assets (frontend)
-		if (url.pathname === "/" || !url.pathname.startsWith("/api/")) {
+		// Serve the frontend entry page with the title injected from the APP_TITLE env var
+		if (url.pathname === "/" || url.pathname === "/index.html") {
+			return serveIndexPage(request, env);
+		}
+
+		// Handle other static assets (frontend)
+		if (!url.pathname.startsWith("/api/")) {
 			return env.ASSETS.fetch(request);
 		}
 
@@ -49,6 +54,20 @@ export default {
 } satisfies ExportedHandler<Env>;
 
 /**
+ * Serves index.html with the page title injected from the APP_TITLE env var.
+ */
+async function serveIndexPage(request: Request, env: Env): Promise<Response> {
+	const res = await env.ASSETS.fetch(request);
+	return new HTMLRewriter()
+		.on("title", {
+			element(element) {
+				element.setInnerContent(env.APP_TITLE || DEFAULT_APP_TITLE);
+			},
+		})
+		.transform(res);
+}
+
+/**
  * Handles chat API requests
  */
 async function handleChatRequest(
@@ -67,7 +86,7 @@ async function handleChatRequest(
 		}
 
 		const stream = await env.AI.run(
-			MODEL_ID,
+			(env.MODEL_ID || DEFAULT_MODEL_ID) as keyof AiModels,
 			{
 				messages,
 				max_tokens: 1024,

@@ -167,6 +167,7 @@ body:not(.chat-started) .welcome-container {
 	left: 0;
 	right: 0;
 	bottom: 0;
+	text-align: center;
 }
 
 body:not(.chat-started) .message-input {
@@ -175,19 +176,6 @@ body:not(.chat-started) .message-input {
 	left: calc(0.75rem + 20px);
 	right: calc(0.75rem + 20px);
 	transform: translateY(80%);
-}
-
-.welcome-container {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	text-align: center;
 }
 
 .welcome-container h1 {
@@ -269,11 +257,6 @@ body.chat-started .message-input {
 		transform: translateY(0) scale(1);
 		opacity: 1;
 	}
-}
-
-.chat-container {
-	display: none;
-	flex-direction: column;
 }
 
 .chat-messages {

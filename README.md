@@ -90,6 +90,7 @@ persona-chat/
 │   └── types.ts             # TypeScript 类型定义
 ├── test/                    # 测试文件
 ├── wrangler.jsonc           # Cloudflare Workers 配置
+├── .env.example             # 环境变量示例（复制为 .dev.vars 可本地覆盖）
 ├── tsconfig.json            # TypeScript 配置
 └── package.json             # 项目依赖
 ```
@@ -125,13 +126,40 @@ curl -X POST https://your-worker.workers.dev/api/chat \
 
 ## 自定义配置
 
-### 更换 AI 模型
+### 环境变量配置
 
-修改 `src/index.ts` 中的 `MODEL_ID` 常量：
+模型 ID 与页面标题均可通过环境变量控制，无需修改代码：
 
-```typescript
-const MODEL_ID = "@cf/meta/llama-3.1-8b-instruct-fp8";
-```
+| 变量 | 说明 | 代码默认值 |
+|------|------|--------|
+| `MODEL_ID` | Workers AI 模型 ID | `@cf/meta/llama-3.1-8b-instruct-fp8` |
+| `APP_TITLE` | 浏览器标签页标题（`<title>`） | `AI Chat` |
+
+代码默认值定义于 `src/index.ts` 的 `DEFAULT_MODEL_ID` / `DEFAULT_APP_TITLE`。
+
+配置优先级：
+
+**线上（生产环境，从高到低）：**
+
+1. **线上环境变量** - Cloudflare 控制台（Worker → 设置 → 变量），或用 `wrangler secret put <KEY>` 配置同名密钥（`wrangler.jsonc` 已启用 `keep_vars`，部署时不会覆盖平台配置）
+2. **代码默认值** - 平台未配置时，使用 `src/index.ts` 中的 `DEFAULT_MODEL_ID` / `DEFAULT_APP_TITLE`
+
+**本地开发（从高到低）：**
+
+1. **`.dev.vars`** - 仅本地开发生效，覆盖默认值。基于示例文件创建：
+
+   ```bash
+   cp .env.example .dev.vars
+   ```
+
+   然后按需修改：
+
+   ```bash
+   MODEL_ID=@cf/meta/llama-3.1-8b-instruct-fp8
+   APP_TITLE=AI Chat
+   ```
+
+2. **代码默认值** - 未创建 `.dev.vars` 时，使用 `src/index.ts` 中的 `DEFAULT_MODEL_ID` / `DEFAULT_APP_TITLE`
 
 可用模型列表: [Workers AI Models](https://developers.cloudflare.com/workers-ai/models/)
 

@@ -15,6 +15,16 @@ export interface Env {
 	 * Binding for static assets.
 	 */
 	ASSETS: { fetch: (request: Request) => Promise<Response> };
+
+	/**
+	 * Model ID for Workers AI, configurable via the MODEL_ID env var.
+	 */
+	MODEL_ID?: string;
+
+	/**
+	 * Frontend page title, configurable via the APP_TITLE env var.
+	 */
+	APP_TITLE?: string;
 }
 
 /**

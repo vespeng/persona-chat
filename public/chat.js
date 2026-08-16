@@ -140,20 +140,6 @@ userInput.addEventListener("input", function () {
 	this.style.height = this.scrollHeight + "px";
 });
 
-// 移动端唤起输入法时，确保最新消息可见（兜底：部分浏览器不自动滚动）
-userInput.addEventListener("focus", () => {
-	if (!chatStarted) return;
-	// 等待键盘弹出导致的 layout 变化稳定后再滚动
-	setTimeout(() => {
-		requestAnimationFrame(() => {
-			chatMessages.scrollTo({
-				top: chatMessages.scrollHeight,
-				behavior: "smooth",
-			});
-		});
-	}, 300);
-});
-
 // Send message on Enter (without Shift), but not during IME composition
 userInput.addEventListener("keydown", function (e) {
 	if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
