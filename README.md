@@ -1,5 +1,9 @@
 # Persona Chat
 
+<p align="center">
+  <img src="public/favicon.svg" alt="Persona Chat" width="144" height="144">
+</p>
+
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange?logo=cloudflare)](https://workers.cloudflare.com/)
 [![Workers AI](https://img.shields.io/badge/Workers-AI-blue)](https://developers.cloudflare.com/workers-ai/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)](https://www.typescriptlang.org/)
@@ -10,6 +14,7 @@
 ## 特性
 
 - 🎭 **AI 角色化** - 通过系统提示词定义角色身份、性格、语气、回答方式与行为底线，对话有"人味儿"
+- 🗄️ **提示词 KV 化管理** - 系统提示词存储于 Cloudflare KV，随时更新无需重新部署，读取失败自动降级为内置默认提示词
 - ⚡ **流式响应** - 基于 SSE (Server-Sent Events) 实时流式输出，兼容 Workers AI 与 OpenAI 两种响应格式
 - 📝 **Markdown 渲染** - 基于 Marked.js 实时渲染 AI 回复，代码块、列表、加粗直接呈现
 - 🌗 **主题切换** - 深色/浅色主题一键切换，配合圆形展开过渡动画
@@ -67,6 +72,8 @@ pnpm run dev
 
 ### 部署
 
+> ⚠️ 如需 KV 存储提示词，请先在控制台创建并绑定 KV 命名空间（见下文「自定义 AI 角色」），绑定关系在控制台配置，无需修改 `wrangler.jsonc`。
+
 ```bash
 pnpm run deploy
 ```
@@ -89,8 +96,7 @@ persona-chat/
 │   ├── styles.css           # UI 样式 (含主题变量)
 │   └── favicon.svg          # 站点图标
 ├── src/
-│   ├── index.ts             # Worker 入口 & API 路由
-│   ├── prompt.ts            # 系统提示词 (AI 角色设定)
+│   ├── index.ts             # Worker 入口 & API 路由（含默认提示词兜底）
 │   └── types.ts             # TypeScript 类型定义
 ├── wrangler.jsonc           # Cloudflare Workers 配置
 ├── .env.example             # 环境变量示例（复制为 .dev.vars 可本地覆盖）
@@ -166,21 +172,27 @@ curl -X POST https://your-worker.workers.dev/api/chat \
 
 可用模型列表: [Workers AI Models](https://developers.cloudflare.com/workers-ai/models/)
 
-### 自定义 AI 角色
+### 自定义 AI 角色（提示词）
 
-编辑 `src/prompt.ts` 文件，修改系统提示词来定义 AI 角色：
+系统提示词存储在 Cloudflare KV 中（绑定名 `PROMPT_KV`，键 `system_prompt`），可随时更新、即时生效，无需修改代码或重新部署。
 
-```typescript
-export default `
-你是 [你的名字] 的在线 AI 延伸——用他的思维方式、语气和知识储备来回应...
-`;
-```
+**首次使用（全程在 Cloudflare 控制台操作，无需填写 id）：**
+
+1. **创建 KV 命名空间**：控制台 → **Workers & Pages → KV → 创建命名空间**，命名随意（如 `persona-chat-kv`）
+2. **绑定到 Worker**：进入你的 Worker → **设置 → 绑定 → 添加绑定 → KV 命名空间**，变量名称填 `PROMPT_KV`，命名空间选择上一步创建的，保存后重新部署
+3. **写入提示词**：回到 **KV** 页面 → 进入该命名空间 → **新建键**，键名 `system_prompt`，值粘贴提示词全文
 
 提示词支持设置：
 - 核心身份（职业背景、性格、兴趣）
 - 语言风格与语气
 - 回答方式与输出要求
 - 行为底线与禁忌
+
+> 💡 **更新即时生效**：修改 KV 中 `system_prompt` 的值后，全球分发通常约 60 秒生效，无需重新部署。
+>
+> 🛟 **兜底机制**：KV 未绑定、读取失败或键不存在时，自动降级为 `src/index.ts` 中内置的 `DEFAULT_SYSTEM_PROMPT`（通用助手提示词）。
+>
+> 🖥️ **本地开发**：控制台绑定仅线上生效。本地 `wrangler dev`（本地模式）没有该绑定，会走默认提示词；如需联调线上 KV，可用 `wrangler dev --remote`。
 
 ### 启用 AI Gateway
 

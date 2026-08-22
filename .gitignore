@@ -197,11 +197,6 @@ dist
 .dev.vars*
 !.dev.vars.example
 
-# Ignore lock files for package managers
-yarn.lock
-package-lock.json
-pnpm-lock.yaml
-
 # Ignore IDE Folders
 .idea/
 .vscode/

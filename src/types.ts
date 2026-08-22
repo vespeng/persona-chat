@@ -25,6 +25,11 @@ export interface Env {
 	 * Frontend page title, configurable via the APP_TITLE env var.
 	 */
 	APP_TITLE?: string;
+
+	/**
+	 * KV namespace storing the system prompt (key: `system_prompt`).
+	 */
+	PROMPT_KV: KVNamespace;
 }
 
 /**

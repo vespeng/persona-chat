@@ -9,11 +9,25 @@
  */
 
 import { Env, ChatMessage } from "./types";
-import SYSTEM_PROMPT from "./prompt";
 
 // Default values, overridable via environment variables (see wrangler.jsonc "vars")
 const DEFAULT_MODEL_ID = "@cf/meta/llama-3.1-8b-instruct-fp8";
 const DEFAULT_APP_TITLE = "AI Chat";
+
+// KV key storing the system prompt (manage via KV, see README)
+const PROMPT_KEY = "system_prompt";
+
+// Fallback system prompt, used when KV is unavailable or the key is missing
+const DEFAULT_SYSTEM_PROMPT = `
+你是一个友好、专业的 AI 助手。
+
+## 回答要求
+
+*   回答简洁清晰，直击重点
+*   不确定的：如实说明"这块我不太确定"，必要时附参考链接，不编造
+*   说错了：直接承认并给出正确版本
+*   拒绝回答违法、色情、暴力等不当内容
+`;
 
 
 export default {
@@ -68,6 +82,20 @@ async function serveIndexPage(request: Request, env: Env): Promise<Response> {
 }
 
 /**
+ * Loads the system prompt from KV, falling back to the built-in default
+ * when KV is unavailable or the key is missing.
+ */
+async function getSystemPrompt(env: Env): Promise<string> {
+	try {
+		const prompt = await env.PROMPT_KV.get(PROMPT_KEY);
+		return prompt || DEFAULT_SYSTEM_PROMPT;
+	} catch (error) {
+		console.error("Failed to load system prompt from KV, using default:", error);
+		return DEFAULT_SYSTEM_PROMPT;
+	}
+}
+
+/**
  * Handles chat API requests
  */
 async function handleChatRequest(
@@ -82,7 +110,7 @@ async function handleChatRequest(
 
 		// Add system prompt if not present
 		if (!messages.some((msg) => msg.role === "system")) {
-			messages.unshift({ role: "system", content: SYSTEM_PROMPT });
+			messages.unshift({ role: "system", content: await getSystemPrompt(env) });
 		}
 
 		const stream = await env.AI.run(
